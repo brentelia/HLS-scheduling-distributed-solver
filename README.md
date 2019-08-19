@@ -1,10 +1,10 @@
 # Distributed-HLS-scheduling-solver-
 
-An Hadoop application for solving the scheduling problem in a High level synthesis context using cluster computing.
+This repository contains an Hadoop application for solving the scheduling problem in a High level synthesis context using cluster computing.
 For more info about the work done see the report file at https://github.com/brentelia/HLS-scheduling-distributed-solver/blob/master/Latex/Relazione.pdf
 
 
-### Usage
+## Usage
 
 The software need to be execute into an hadoop filesystem and it has been tested inside both a java 7 and java 8 environment.
 
@@ -23,6 +23,7 @@ Note that the output directory is created when the application is run and should
 
 ##Credits
 * [Apache Hadoop](https://hadoop.apache.org/) - The framework this application is based on.
+
 ## Authors
 
 * **Andrea Caucchiolo** 
