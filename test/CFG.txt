@@ -1,0 +1,13 @@
+A:sum/,/C
+B:sum/,/E,D
+C:mult/A/E
+D:shift/B/F
+E:sum/C,B/F
+F:mult/D,E/,
+G:add/,/H
+H:add/G/,
+I:add/,/M,O
+L:add/,/M
+M:add/I,L/N
+N:add/M,O/,
+O:add/I/N

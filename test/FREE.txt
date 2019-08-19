@@ -1,0 +1,15 @@
+A:sum/,/B
+D:sum/C/E
+F:sum/,/,
+G:sum/,/,
+H:sum/,/,
+J:sum/,/,
+K:sum/,/,
+L:sum/,/,
+X:sum/,/,
+C:sum/B/D
+V:sum/,/,
+B:sum/A/C
+N:sum/,/,
+M:sum/,/,
+E:sum/D/,

@@ -1,0 +1,15 @@
+A:sum/,/B
+B:sum/A/C
+C:sum/B/D
+D:sum/C/E
+E:sum/D/F
+F:sum/E,M/G
+G:sum/F,Q/,
+H:sum/,/I,N
+I:sum/H/L
+L:sum/I/M
+M:sum/L/Q,F
+N:sum/H/O
+O:sum/N/P
+P:sum/O/Q
+Q:sum/M,P/G

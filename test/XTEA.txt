@@ -1,0 +1,10 @@
+E:shift/,/D
+F:shift/,/D
+D:xor/E,F/B
+B:sum/D/A
+C:sum/,/A
+A:xor/B,C/G
+G:add/A/H
+H:assign/G/,
+I:add/,/L
+L:assign/I/,
