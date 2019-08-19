@@ -1,7 +1,7 @@
 # Distributed-HLS-scheduling-solver-
 
 An Hadoop application for solving the scheduling problem in a High level synthesis context using cluster computing.
-For more info about thw work done see the report file at https://github.com/brentelia/HLS-scheduling-distributed-solver/blob/master/Latex/Relazione.pdf
+For more info about the work done see the report file at https://github.com/brentelia/HLS-scheduling-distributed-solver/blob/master/Latex/Relazione.pdf
 
 
 ### Usage
@@ -11,9 +11,9 @@ The software need to be execute into an hadoop filesystem and it has been tested
 In order to run the program first of all the Apache Hadoop Libraries must be installed onto the machine (here the version 2.6.0 is used).
 Then a jar file must be creaded starting from the source code find in this repository (it can be easily done using java ide like eclipse or similar)
 Finally the jar input file must be inserted into the hadoop filesystem using
-'''
+```
 hdfs -put <input file> <path to the input file directory on the filesystem>  
-'''
+```
 
 After this you can run the jar file
 ```
