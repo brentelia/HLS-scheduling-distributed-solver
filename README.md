@@ -21,7 +21,7 @@ hadoop jar .<your jar name> MapReduce.ExplorerDriver <input directory path> <out
 ```
 Note that the output directory is created when the application is run and shouldn't exist berfore that.
 
-#Credits
+##Credits
 * [Apache Hadoop](https://hadoop.apache.org/) - The framework this application is based on.
 ## Authors
 
