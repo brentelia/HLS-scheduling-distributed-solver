@@ -13,6 +13,7 @@
 \usepackage{xcolor}
 %\usepackage{textcomp}
 \usepackage{listings}
+\usepackage[ center ]{ subfigure }
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
@@ -68,6 +69,7 @@ Per avere una migliore comprensione della relazione di seguito sono riportati al
 \begin{itemize}
 	\item High Level Synthesis (HLS) \cite{HLS}: La sintesi ad alto livello è un'insieme di procedure che permettono di passare da un software scritto in un linguaggio ad alto livello alla descrizione di una piattaforma hardware in grado di eseguire le stesse operazioni del software di partenza e rispettando al contempo i vincoli imposti sulla velocità delle operazioni, le dimensioni del chip e il costo per la produzione. La figura \ref{hls} mostra i passaggi chiave della procedura. Nel corso della relazione si farà riferimento solamente alla fase di scheduling in quanto rappresenta la parte più difficile da affrontare.
 	\begin{figure}[htp]
+		\centering
 		\includegraphics[width=0.5\textwidth]{images/Hls_flow.png}
 		\caption{Schema del processo di \emph{high level synthesis}}
 		\label{hls}
@@ -82,6 +84,7 @@ Per avere una migliore comprensione della relazione di seguito sono riportati al
 	
 	\item Map-Reduce\cite{MAPRED}: Paradigma di programmazione per il calcolo distribuito, consiste nel dividere un input di grandi dimensioni i diverse porzioni che vengono poi processate tutte in modo indipendente dalle altre (map). In seguito i risultati parziali vengono raccolti, ordinati e redistribuiti tra le macchine in base al valore impostato come chiave (shuffle and sort) per poi essere combinati in un unico risultato finale. La figura \ref{mapred} schematizza il processo appena descritto.
 	\begin{figure}[htp]
+		\centering
 		\includegraphics[width=0.5\textwidth]{images/mapred.png}
 		\caption{Schema del processo di map-reduce. L'input è diviso tra i vari mapper che producono una serie di risultati del tipo chiave-valore. Successivamente i risultati sono raccolti e ridivisi tra i reducer in base al valore della loro chiave.}
 		\label{mapred}
@@ -95,6 +98,7 @@ Per poter capire meglio il problema che ci si è posto è necessario prima di tu
 
 Per prima cosa  dai requisiti forniti viene creata un'applicazione software che descrive il sistema da implementare. Successivamente questa applicazione viene partizionata in due sottoinsiemi: una parte delle funzionalità diventerà il software in funzione sulla piattaforma mentre la parte rimanente verrà sintetizzata in componenti hardware che verranno installate sulla piattaforma. Il modo in cui il partizionamento viene fatto dipende prevalentemente dai requisiti imposti e dal risultato di vari profiling e simulazioni. È importante notare come questa divisione non sia irreversibile ma, al contrario, è spessa soggetta a cambiamenti dovuti proprio ai risultati dei vari test fatti. Una volta che si è giunti ad una situazione ottima si passa all'implementazione fisica della piattaforma.
 \begin{figure}[htp]
+	\centering
 	\includegraphics[width=0.5\textwidth]{images/embedded_sys_df.png}
 	\caption{Flusso di progettazione di un sistema embedded.}
 	\label{pse}
@@ -110,6 +114,7 @@ La fase di scheduling consiste fondamentalmente in tre passaggi con tre algoritm
 \end{itemize}
 Le figure \ref{scheduling} e \ref{scheduling2} mostrano un esempio dell'applicazione di quanto riportato sopra.
 \begin{figure}[htp]
+	\centering
 	\includegraphics[width=0.5\textwidth]{images/schedule.png}
 	\caption{Trasformazione di un codice sorgente in DFG e applicazione degli algoritmi ASAP e ALAP (le variabili usate nei nodi sono state omesse dopo lo scheduling asap).}
 	\label{scheduling}
@@ -129,31 +134,32 @@ Trasporre il problema in modo da adattarlo al paradigma map-reduce non è un'ope
 Per ottenere questo risultato si è partiti da una prima idea di soluzione valida, ovvero di distribuire l'onere del calcolo delle varie permutazioni tra le varie macchine del cluster, e la si è andata a rifinire e modificare lungo tutto il corso del lavoro. Di seguito sono riportate le tre fasi principali cui la soluzione è andata incontro.
 \begin{itemize}
 	\item Fase 1 (fig.\ref{sol_fase1}): In questa prima fase la soluzione consiste essenzialmente in tre passaggi distinti. In un primo passaggio il DFG è processato da un'unica unità centrale con lo scopo di andare a calcolare le varie permutazioni dello stesso. Successivamente queste permutazioni sono inviate ai vari mapper che procedono a calcolarne il costo ed a inviarlo ad un unico reducer che cerca la soluzione a costo migliore. Ovviamente il fatto di dover calcolare tutte le permutazioni in un'unica entità centrale non ha garantito buone prestazioni e ciò a fatto sì che la soluzione venisse migliorata nella seconda fase.
-	\begin{figure}[htp]
-		\includegraphics[width=0.5\textwidth]{images/sol_fase1.png}
-		\caption{Schema della soluzione nella prima fase.}
-		\label{sol_fase1}
-	\end{figure}
 	
 	\item Fase 2 (fig.\ref{sol_fase2}): Questa fase mantiene lo scheletro della precedente ma sposta il calcolo delle permutazioni sui mapper. Adesso l'unità centrale deve solamente stimare il numero di permutazioni che possono essere generate, dividere tale numero per il numero di macchine presenti e dire ai mapper quante permutazioni calcolare e da quale partire (per maggiori dettagli si veda la sezione \ref{Stima}). Di conseguenza in questa fase si ha un potenziamento dei mapper che devono non solo calcolare tutta una serie di permutazioni di un grafo (eliminando eventuali comfigurazioni illegali) ma per ognuna di queste deve anche calcolarne il relativo costo da inviare al reducer che, rispetto alla fase precedente, non ha subito essenziali modifiche. Già con queste modifiche la soluzione si presenta più performante rispetto alla precedente ma, a causa della struttura con cui hadoop è creato, non è implementabile. Si è dovuto quindi effettuare una seconda ristrutturazione per rendere la soluzione compatibile con il framework.
-	\begin{figure}[htp]
-		\includegraphics[width=0.5\textwidth]{images/sol_fase2.png}
-		\caption{Schema della soluzione nella seconda fase.}
-		\label{sol_fase2}
-	\end{figure}
+
 	
 	\item Fase 3 (fig.\ref{sol_fase3}): Questa fase, seppur mantenendo i concetti espressi nella seconda, vede uno shift a livello di passaggi coinvolti. Adesso infatti l'unità centralizzata responsabile del calcolo delle permutazioni viene completamente eliminata e le sue funzionalità sono ereditate da un singolo mapper che calcola il punto di partenza e il numero di permutazioni da inviare ai reducer. Questi infatti ereditano le funzionalità dei mapper e devono calcolare la migliore permutazione tra tutte quelle loro assegnate. Ciò comporta che l'output del job non è più un unico grafo come in precedenza ma una numero di grafi pari al numero di reducer ed è quindi necessario un modo per cercare il migliore. Questo può essere fatto tramite un semplice job di map-reduce oppure (in caso di un numero ristretto di output) con un semplice programma sequenziale.
 	\begin{figure}[htp]
+		\centering
+		\includegraphics[width=0.5\textwidth]{images/sol_fase1.png}
+		\caption{Schema della soluzione nella prima fase.}
+		\label{sol_fase1}
+		\includegraphics[width=0.5\textwidth]{images/sol_fase2.png}
+		\caption{Schema della soluzione nella seconda fase.}
+		\label{sol_fase2}
 		\includegraphics[width=0.5\textwidth]{images/sol_schema3.png}
 		\caption{Schema della soluzione nella terza fase.}
 		\label{sol_fase3}
 	\end{figure}
+
+	
 \end{itemize}
 \subsection{Implementazione con Hadoop}
 Dopo aver definito lo schema della soluzione da adottare si è passati all'effettiva implementazione in Hadoop. Poiché il framework supporta pienamente il paradigma map-reduce è stato sufficiente andare ad implementare le varie classi necessarie perché il job venisse accettato, ovvero le classi java \emph{Driver}, \emph{InputReader},\emph{Mapper},\emph{Partitioner} e \emph{Reducer} (approfondite nella sezione \ref{work}). Se l'implementazione delle classi è stata facile, ci si è dovuti però andare a scontrare con alcune delle limitazioni imposte dal framework, limitazioni che in più punti hanno costretto a modificare la soluzione adottata o a imporre delle restrizioni in modo forzato.
 
 La prima limitazione incontrata è dovuta all'impossibilità di conoscere a runtime il numero di nodi che il cluster possiede. Senza questa informazione non sarebbe potuto suddividere le permutazioni tra le macchine e, di conseguenza, non sarebbe stato possibile risolvere il problema nel modo desiderato. Per porre rimedio a ciò si è scelto di imporre all'utente di inserire, al lancio del job, la granularità del parallelismo voluto, ovvero il numero per cui le permutazioni stimate vanno divise e quindi la quantità di lavoro assegnata ad ogni singolo nodo. Sebbene in un primo momento questa scelta possa sembrare una limitazione eccessiva, una volta implementata la terza soluzione, ci si è resi conto che venivano introdotti come effetto collaterale due importanti vantaggi. Con questo metodo è possibile, in primo luogo, scegliere di non usare tutta la potenza di calcolo del cluster ma solo una frazione, lasciando liberi gli altri nodi di eseguire altri job. In seconda istanza si può, al contrario di prima, andare ad inserire un valore che supera il numero di nodi nel cluster. In questo modo ogni nodo si troverà a dover eseguire un numero minore di operazioni e, di conseguenza, i nodi più veloci riusciranno a completare più task di reduce rispetto a quelli lenti che faticano a completarne uno. Grazie a ciò si crea un meccanismo semi-automatico del bilanciamento del carico di lavoro al prezzo di un aumento del numero dei file di output (ogni task di reduce genera un file di output).
 \begin{figure}
+	\centering
 	\includegraphics[width=0.5\textwidth]{images/exec.png}
 	\caption{Comando per lanciare il job su Hadoop. Si noti il numero ``10'' posto alla fine ad indicare di dividere le permutazioni per 10 cluster. Inoltre se possibile verranno usati 10 nodi per eseguire i task di reduce (in caso il numero sia eccessivo Hadoop allocherà quanto disponibile senza ritornare errore).}
 \end{figure}
@@ -164,6 +170,7 @@ Nel momento in cui si è passati alla terza fase della soluzione questo procedim
 
 Ultimo ostacolo affrontato è stato il modo in cui il framework gestisce la suddivisione degli input. Come si è potuto osservare in precedenza, sia la prima che la seconda fase della soluzione proposta si basavano fortemente sull'uso di un nodo centrale per il parsing e la suddivisione dei grafi tra i mapper. Inizialmente si era pensato di affidare il compito alla classe responsabile di leggere il file di input nell'errata convinzione che questa fosse univoca all'interno del framework. Dopo alcuni test e ricerche si è però capito che in realtà questa classe non è unica rispetto al framework ma è univoca rispetto al mapper, ovvero ogni mapper istanzia una classe propria che legge l'input, anch'esso replicato sulle diverse macchine. A causa di ciò il lavoro che doveva essere fatto solo una volta veniva moltiplicato per il numero di mapper allocati, rompendo quindi la correttezza del programma. A causa di ciò si è decisi di modificare il programma, passando dunque alla terza fase, e di delegare il compito della suddivisione delle partizioni al mapper, il quale può essere univoco all'interno del framework.
 \begin{figure}
+	\centering
 	\includegraphics[width=0.5\textwidth]{images/hadoop_input.png}
 	\caption{A sinistra il modo in cui l'input doveva essere processato secondo la soluzione nella sua prima e seconda fase, a destra il modo in cui Hadoop lo gestiva. Si noti che in questo modo ogni mapper esegue tutto il lavoro e non solo una porzione.}
 \end{figure}
