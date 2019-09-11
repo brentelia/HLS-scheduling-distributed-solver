@@ -1,0 +1,12 @@
+A:mult/,/G
+B:mult/,/E
+C:mult/,/N
+D:min/,/,
+E:sum/B/F,L
+F:sum/E/G
+G:sum/A,F/H,I,L
+H:mult/G/M
+I:sum/G/M
+L:min/E,G/M
+M:min_assign/H,I,L/,
+N:min_assign/C/,

@@ -33,6 +33,21 @@
 	tabsize=3,
 	escapechar=^
 }
+
+\usepackage{fancyvrb}
+
+% redefine \VerbatimInput
+\RecustomVerbatimCommand{\VerbatimInput}{VerbatimInput}%
+{fontsize=\footnotesize,
+	%
+	frame=lines,  % top and bottom rule only
+	framesep=2em, % separation between frame and text
+	rulecolor=\color{gray},
+	%
+	commandchars=\|\(\), % escape character and argument delimiters for
+	% commands within the verbatim
+	commentchar=*        % comment character
+}
 \begin{document}
 \maketitle
 
@@ -99,7 +114,7 @@ Le figure \ref{scheduling} e \ref{scheduling2} mostrano un esempio dell'applicaz
 	\caption{Trasformazione di un codice sorgente in DFG e applicazione degli algoritmi ASAP e ALAP (le variabili usate nei nodi sono state omesse dopo lo scheduling asap).}
 	\label{scheduling}
 	\includegraphics[width=0.3\textwidth]{images/scheduling2.png}
-	\caption{Possibile risultato dello scheduling applicato al codice della figura \ref{scheduling}}
+	\caption{Possibile risultato  dello scheduling (permutazione del grafo) applicato al codice della figura \ref{scheduling}}
 	\label{scheduling2}
 \end{figure}
 
@@ -113,21 +128,21 @@ Trasporre il problema in modo da adattarlo al paradigma map-reduce non è un'ope
 
 Per ottenere questo risultato si è partiti da una prima idea di soluzione valida, ovvero di distribuire l'onere del calcolo delle varie permutazioni tra le varie macchine del cluster, e la si è andata a rifinire e modificare lungo tutto il corso del lavoro. Di seguito sono riportate le tre fasi principali cui la soluzione è andata incontro.
 \begin{itemize}
-	\item Fase 1(fig.\ref{sol_fase1}): In questa prima fase la soluzione consiste essenzialmente in tre passaggi distinti. In un primo passaggio il DFG è processato da un'unica unità centrale con lo scopo di andare a calcolare le varie permutazioni dello stesso. Successivamente queste permutazioni sono inviate ai vari mapper che procedono a calcolarne il costo ed a inviarlo ad un unico reducer che cerca la soluzione a costo migliore. Ovviamente il fatto di dover calcolare tutte le permutazioni in un'unica entità centrale non ha garantito buone prestazioni e ciò a fatto sì che la soluzione venisse migliorata nella seconda fase.
+	\item Fase 1 (fig.\ref{sol_fase1}): In questa prima fase la soluzione consiste essenzialmente in tre passaggi distinti. In un primo passaggio il DFG è processato da un'unica unità centrale con lo scopo di andare a calcolare le varie permutazioni dello stesso. Successivamente queste permutazioni sono inviate ai vari mapper che procedono a calcolarne il costo ed a inviarlo ad un unico reducer che cerca la soluzione a costo migliore. Ovviamente il fatto di dover calcolare tutte le permutazioni in un'unica entità centrale non ha garantito buone prestazioni e ciò a fatto sì che la soluzione venisse migliorata nella seconda fase.
 	\begin{figure}[htp]
 		\includegraphics[width=0.5\textwidth]{images/sol_fase1.png}
 		\caption{Schema della soluzione nella prima fase.}
 		\label{sol_fase1}
 	\end{figure}
 	
-	\item Fase 2(fig.\ref{sol_fase2}): Questa fase mantiene lo scheletro della precedente ma sposta il calcolo delle permutazioni sui mapper. Adesso l'unità centrale deve solamente stimare il numero di permutazioni che possono essere generate, dividere tale numero per il numero di macchine presenti e dire ai mapper quante permutazioni calcolare e da quale partire (per maggiori dettagli si veda la sezione \ref{Stima}). Di conseguenza in questa fase si ha un potenziamento dei mapper che devono non solo calcolare tutta una serie di permutazioni di un grafo (eliminando eventuali comfigurazioni illegali) ma per ognuna di queste deve anche calcolarne il relativo costo da inviare al reducer che, rispetto alla fase precedente, non ha subito essenziali modifiche. Già con queste modifiche la soluzione si presenta più performante rispetto alla precedente ma, a causa della struttura con cui hadoop è creato, non è implementabile. Si è dovuto quindi effettuare una seconda ristrutturazione per rendere la soluzione compatibile con il framework.
+	\item Fase 2 (fig.\ref{sol_fase2}): Questa fase mantiene lo scheletro della precedente ma sposta il calcolo delle permutazioni sui mapper. Adesso l'unità centrale deve solamente stimare il numero di permutazioni che possono essere generate, dividere tale numero per il numero di macchine presenti e dire ai mapper quante permutazioni calcolare e da quale partire (per maggiori dettagli si veda la sezione \ref{Stima}). Di conseguenza in questa fase si ha un potenziamento dei mapper che devono non solo calcolare tutta una serie di permutazioni di un grafo (eliminando eventuali comfigurazioni illegali) ma per ognuna di queste deve anche calcolarne il relativo costo da inviare al reducer che, rispetto alla fase precedente, non ha subito essenziali modifiche. Già con queste modifiche la soluzione si presenta più performante rispetto alla precedente ma, a causa della struttura con cui hadoop è creato, non è implementabile. Si è dovuto quindi effettuare una seconda ristrutturazione per rendere la soluzione compatibile con il framework.
 	\begin{figure}[htp]
 		\includegraphics[width=0.5\textwidth]{images/sol_fase2.png}
 		\caption{Schema della soluzione nella seconda fase.}
 		\label{sol_fase2}
 	\end{figure}
 	
-	\item Fase 3(fig.\ref{sol_fase3}): Questa fase, seppur mantenendo i concetti espressi nella seconda, vede uno shift a livello di passaggi coinvolti. Adesso infatti l'unità centralizzata responsabile del calcolo delle permutazioni viene completamente eliminata e le sue funzionalità sono ereditate da un singolo mapper che calcola il punto di partenza e il numero di permutazioni da inviare ai reducer. Questi infatti ereditano le funzionalità dei mapper e devono calcolare la migliore permutazione tra tutte quelle loro assegnate. Ciò comporta che l'output del job non è più un unico grafo come in precedenza ma una numero di grafi pari al numero di reducer ed è quindi necessario un modo per cercare il migliore. Questo può essere fatto tramite un semplice job di map-reduce oppure (in caso di un numero ristretto di output) con un semplice programma sequenziale.
+	\item Fase 3 (fig.\ref{sol_fase3}): Questa fase, seppur mantenendo i concetti espressi nella seconda, vede uno shift a livello di passaggi coinvolti. Adesso infatti l'unità centralizzata responsabile del calcolo delle permutazioni viene completamente eliminata e le sue funzionalità sono ereditate da un singolo mapper che calcola il punto di partenza e il numero di permutazioni da inviare ai reducer. Questi infatti ereditano le funzionalità dei mapper e devono calcolare la migliore permutazione tra tutte quelle loro assegnate. Ciò comporta che l'output del job non è più un unico grafo come in precedenza ma una numero di grafi pari al numero di reducer ed è quindi necessario un modo per cercare il migliore. Questo può essere fatto tramite un semplice job di map-reduce oppure (in caso di un numero ristretto di output) con un semplice programma sequenziale.
 	\begin{figure}[htp]
 		\includegraphics[width=0.5\textwidth]{images/sol_schema3.png}
 		\caption{Schema della soluzione nella terza fase.}
@@ -153,7 +168,7 @@ Ultimo ostacolo affrontato è stato il modo in cui il framework gestisce la sudd
 	\caption{A sinistra il modo in cui l'input doveva essere processato secondo la soluzione nella sua prima e seconda fase, a destra il modo in cui Hadoop lo gestiva. Si noti che in questo modo ogni mapper esegue tutto il lavoro e non solo una porzione.}
 \end{figure}
 
-\section{Lavoro svolto} \label{work}
+\section[Lavoro]{Lavoro svolto \footnote{Codice sorgente completo reperibile a \url{https://github.com/brentelia/HLS-scheduling-distributed-solver}}} \label{work}
 Per implementare soluzione proposta tramite Hadoop è stato sufficiente andare ad implementare tutte le classi che il framework richiede per poter sottomettere un job  di map-reduce al cluster. Di seguito sono riportate tutte le classi implementate con le relative spiegazioni e porzioni di codice.
 \subsection{Classe Driver}
 In un job di Hadoop la classe \emph{Driver} ha il compito di andare a preparare  l'ambiente in cui l'applicazione verrà lanciata andando configurare tutte le variabili necessarie. La classe Driver implementata nel software proposto non si distacca da questa molto da questo paradigma ma presenta comunque alcuni punti degni di nota.
@@ -183,7 +198,8 @@ job.setJobName("Graph Exploration");
 //Iinput path of the file
 FileInputFormat.addInputPath(job, new Path(args[0])); 
 //Input parser class
-job.setInputFormatClass(GraphInputFormat.class); 
+job.setInputFormatClass(
+	GraphInputFormat.class); 
 //Output directory
 FileOutputFormat.setOutputPath(job, new Path(args[1]));
 //Mapper class
@@ -191,13 +207,34 @@ job.setMapperClass(ExplorerMapper.class);
 //Reducer class
 job.setReducerClass(ExplorerReducer.class); 
 //Partitioner class
-job.setPartitionerClass(ExplorerPartitioner.class); 
+job.setPartitionerClass(
+	ExplorerPartitioner.class); 
 //Key and Value types
 job.setOutputKeyClass(Text.class); 
 job.setOutputValueClass(Text.class);
 \end{lstlisting}
 \subsection{Classe GraphInputReader}
-La classe GraphInputReader è una classe che estende l'originaria classe RecordReader di Hadoop. Tale classe ha, in origine, lo scopo di leggere porzioni di file da inviare al mapper associatogli (tipicamente riga per riga) fino all'esaurimento del file in input. Tuttavia poiché questo comportamento non si adattava bene a quello del programma è stato scelto di sostituirla con una classe apposita con lo scopo di leggere in un unico colpo tutto il file. TODO INSERIRE COSE SU GRAFI E CATENE
+La classe GraphInputReader è una classe che estende l'originaria classe RecordReader di Hadoop. Tale classe aveva, in origine, lo scopo di leggere porzioni di file da inviare al mapper associatogli (tipicamente riga per riga) fino all'esaurimento del file in input. Tuttavia poiché questo comportamento non si adattava bene a quello del programma è stato scelto di sostituirla con una classe apposita con lo scopo di leggere in un unico colpo tutto il file. Per poter fare questo si è andati a modificare il metodo \emph{initialize} ereditato dalla classe padre in modo da salvare tutto il file all'interno di una stringa che viene poi inviata come coppia chiave-valore (la chiave è una stringa vuota) al mapper. Dopo il primo invio del grafo, una flag viene settata in modo che la funzione ereditata \emph{nextKeyValue()}, metodo cui scopo è far sapere l'eventuale presenza di ulteriori dati da inviare, ritorni il valore falso così che il mapper non faccia richiesta di ulteriori dati. Di seguito è riportato un esempio di un file di input riferito al DFG in figura \ref{scheduling}: Ogni riga descrive un nodo del grafo con: \texttt{nome:operatore/nodi\_input/nodi\_output}.
+\VerbatimInput{files/DAG.txt}
+
+\subsection{Mapper}
+Il Mapper è responsabile di:
+\begin{itemize}
+	\item eseguire il parse del grafo;
+	\item calcolare la mobilità di ogni nodo;
+	\item stimare il numero di permutazioni;
+	\item creare le mappature per distribuire il calcolo.
+\end{itemize}
+Il mapper riceve come input la stringa contenente il grafo ed è quindi necessario costruire una struttura dati appropriata per poterlo gestire. Questo viene realizzato tramite l'utilizzo di una HashMap che permette una associazione in $O(1)$ tra il nome del nodo (come rappresentato nel file di input) e l'effettiva struttura dati contenente tutti i dati del nodo stesso. Questo permette il parse del grafo in tempo $O(V+E)$, dal momento che è necessario esplorare anche tutti gli archi per trovare i nodi padri/figli di ogni nodo. Oltre a ciò vengono anche eseguiti gli scheduling ASAP e ALAP sul grafo in modo da calcolare gli attributi $t$, $T$ e della mobilità $m$, necessari al calcolo delle permutazioni successive.
+Calcolare ogni possibile permutazione del grafo è un'operazione estremamente pesante in termini di tempo ($O(V!)$), ma è necessario per poter suddividere il carico di lavoro tra i vari Reducer. Per cercare quindi di ridurre la complessità del calcolo si è  deciso di andare sovrastimare il numero di possibili permutazioni (aggiungendo quindi combinazioni invalide) ma riuscendo ad eseguire questa stima in tempo lineare $O(V+E)$, garantendo quindi la possibilità di analizzare anche grafi molto grandi. Questa stima viene realizzata analizzando delle strutture presenti nel grafo che qui chiameremo \emph{catene}. Una catena è definita come un insieme di nodi aventi la stessa mobilità (attributo $m$) e dove ogni nodo (eccetto uno) possiede uno e un solo figlio nella catena.
+%todo chain fig
+L'introduzione del concetto di catena è fondamentale per il calcolo delle permutazioni poiché per ogni una di queste è facile calcolare le possibili permutazioni in quanto una catena di $x$ nodi e $m$ mobilità ha permutazioni pari a $P_{x+m}^{x,m} = \frac{(x+m)!}{x!m!}$
+\'E tuttavia possibile che alcuni nodi facciano però parte di più possibili catene: in questo caso il nodo viene inserito nella catena più lunga, introducendo tuttavia un errore in quanto una possibile dipendenza temporale verrebbe nascosta ed inserendo quindi permutazioni non valide nel pool da testare.
+%todo chain error fig
+Infine la stima totale viene ottenuta moltiplicando tra loro le permutazioni possibili di ogni catena presente nel grafo.
+%todo mostrare rapporto tra stima e calcolo effettivo
+
+Una volta finita la stima il mapper mappa le permutazioni tra i Reducer specificati dall'utente, dividendo le permutazioni equamente tra tutti, specificando i nodi componenti di ogni catena, il numero della permutazione iniziale e l'ammontare di permutazioni da calcolare.
 
 \subsection{Classe Partitioner}
 La classe \emph{Partitioner} ha il compito, all'interno del framework, di andare a distribuire i risultati dei mapper tra i vari reducer. Tipicamente questo è fatto andando a creare l'hash delle chiave usando il resto della divisione per il numero di reducer come identificativo del reducer cui il dato deve essere girato. In questo caso però ciò non è necessario poiché il numero di risultati è esattamente uguale al numero di reducer usati, quindi ogni risultato è mappato univocamente su un solo reducer tramite un semplice contatore che va da 0 al numero di questi meno uno.
@@ -211,6 +248,25 @@ public class ExplorerPartitioner extends Partitioner<Text,Text>{
 	}
 }
 \end{lstlisting}
+
+\subsection{Reducer}
+Il compito più importante all'interno dell'applicazione spetta al reducer. Questo deve:
+\begin{itemize}
+	\item eseguire il parse del grafo ricevuto in input;
+	\item eseguire il parse delle catene;
+	\item calcolare la posizione iniziale del grafo;
+	\item analizzare ogni permutazione assegnata;
+	\item restituire la combinazione migliore.
+\end{itemize}
+Le prime due operazioni possono essere svolte con relativa facilità in quanto si tratta solo di andare a ritrovare nella stringa inviata dal mapper tutti i vari dati che sono utili per poter eseguire il calcolo. In particolare le catene sono inserite in strutture dati apposite dotate di metodi utili per i futuri calcoli. 
+Il calcolo della posizione iniziale del grafo (ovvero la configurazione da cui calcolare le permutazioni successive) comincia con il calcolo della \emph{base} di ogni catena,ossia il numero di permutazioni ammesse all'interno della catena stessa. Sapendo dunque che la stima è stata ottenuta come prodotto delle possibili permutazioni di ogni catena è quindi possibile fattorizzarla usando gli stessi valori (ossia le basi). Il numero ricevuto come permutazione iniziale viene perciò fattorizzato usando le basi di ogni catena, permettendo di ottenere il numero della permutazione relativa ad ogni singola catena necessario per ottenere la configurazione iniziale. Avendo ottenuto il numero di permutazione per ogni catena, vengono calcolate la permutazioni (e di conseguenza, posizione temporale dei nodi al loro interno) associate, ottenendo così la posizione di partenza del grafo da analizzare.
+%todo immagine fattorizzazione
+In seguito per ogni permutazione ne viene analizzata la validità, controllando quindi eventuali violazioni di vincoli temporali (che, come specificato in precedenza, possono esistere). Nel caso il grafo in analisi risulti essere valido ne viene controllato il costo e, se risulta migliore del risultato parziale, lo sostituisce. 
+In questo progetto abbiamo utilizzato come funzione di costo il massimo numero di nodi paralleli tra loro, e come obiettivo la minimizzazione dello stesso.
+Una volta finito il passaggio precedente si incrementa il numero della permutazione da analizzare, incrementando il valore della catena "meno significativa" all'interno del numero e propagando eventuali riporti verso le altre catene, ricalcolando poi la posizione relativa di ogni nodo al loro interno.
+Questo metodo permette di calcolare ogni permutazione successiva modificando il minor numero di nodi possibile e minimizzando quindi la complessità dell'algoritmo.
+Finita la valutazione di ogni permutazione il Reducer manda quindi il risultato in output.
+Non sempre, però, questo è da considerarsi valido, in quanto in alcuni casi ( quando il numero di Reducer assegnati è troppo grande per il numero di permutazioni da calcolare) è possibile arrivare al termine dell'analisi senza aver mai trovato un grafo valido. In questi casi viene comunque ritornata la posizione iniziale assegnata, ma ne viene specificata la sua non validità.
 
 \section{Risultati ottenuti}
 %TODO Discutere risultati ottenuti con algoritmi su cluster mettendo in relazione permutazioni/tempo impiegato e nodi usati con screenshot.
