@@ -4,7 +4,7 @@ This repository contains an Hadoop application for solving the scheduling proble
 For more info about the work done see the report file at https://github.com/brentelia/HLS-scheduling-distributed-solver/blob/master/Latex/Relazione.pdf
 
 ## Structure
-The repository is divided into the following folder:
+The repository is divided into the following folders:
 * Latex : this folder contains all the files used to generate the pdf report.
 * MapReduce : this folder contains all the java class that are used inside the Hadoop framework (i.e. that extends the hadoop classes) or the class which implements core funcions for the program.
 * structure: this folder contains the class used to represent data in the program.
