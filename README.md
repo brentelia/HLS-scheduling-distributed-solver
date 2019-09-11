@@ -3,6 +3,13 @@
 This repository contains an Hadoop application for solving the scheduling problem in a High level synthesis context using cluster computing.
 For more info about the work done see the report file at https://github.com/brentelia/HLS-scheduling-distributed-solver/blob/master/Latex/Relazione.pdf
 
+## Structure
+The repository is divided into the following folder:
+* Latex : this folder contains all the files used to generate the pdf report.
+* MapReduce : this folder contains all the java class that are used inside the Hadoop framework (i.e. that extends the hadoop classes) or the class which implements core funcions for the program.
+* structure: this folder contains the class used to represent data in the program.
+* test : this folder contains the files used to test the application functionalities locally (not on the cluster)
+* util : this folder contains other files that are used to support the application.
 
 ##  Usage
 
