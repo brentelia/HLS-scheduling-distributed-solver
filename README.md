@@ -24,7 +24,7 @@ hdfs -put <input file> <path to the input file directory on the filesystem>
 
 After this you can run the jar file
 ```
-hadoop jar .<your jar name> MapReduce.ExplorerDriver <input directory path> <output directory path> <parallelism level>
+hadoop jar <your jar name> MapReduce.ExplorerDriver <input directory path> <output directory path> <parallelism level>
 ```
 Note that the output directory is created when the application is run and shouldn't exist berfore that.
 
