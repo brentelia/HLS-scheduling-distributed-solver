@@ -20,13 +20,22 @@ import util.Pair;
 public class LocalTester {
 
 	public static void main(String[] args) {
-		Dag graph = new Dag();
+		Dag graph;
 		BufferedReader in;
 		String line;
-		String graphStr = "";
-		try {
+		String graphStr; 
+		String[] tests= {"CFG.txt","DAG.txt","EVIL.txt","FREE.txt","XTEA.txt","MULTI.txt"};
 
-			in = new BufferedReader(new FileReader("./src/test/MULTI.txt"));
+		try {
+//			PrintStream fileOut = new PrintStream(new FileOutputStream("log.txt"));
+//			System.setOut(fileOut);
+
+			System.out.println("===BEGIN TEST====");
+			for(int iterator=0; iterator<tests.length;iterator++) {
+			graphStr	= "";
+			graph= new Dag();
+			in = new BufferedReader(new FileReader("./src/test/"+tests[iterator]));
+			System.out.println("Testing file: "+tests[iterator]);
 			/*
 			 * long startDAG = System.nanoTime(); while ((line=in.readLine())!= null) {
 			 * graph.addNode(new Node(line)); graphStr += line + "\n"; }
@@ -50,7 +59,7 @@ public class LocalTester {
 
 			graph.asapSchedule();
 
-			System.out.println("ASAP\n" + graph);
+			//System.out.println("ASAP\n" + graph);
 
 			graph.alapSchedule();
 
@@ -77,9 +86,9 @@ public class LocalTester {
 			long perm = tmpPair.getFirst();
 			ArrayList<Chain> chains = tmpPair.getSecond();
 
-			System.out.println("Estimated number of expansions with Raw formula: " + ext_cost);
+			//System.out.println("Estimated number of expansions with Raw formula: " + ext_cost);
 			System.out.println(
-					"Estimated number of expansions with C formula: " + perm + ", Time: " + (stopTime - startTime));
+					"Estimated number of expansions with approximated formula: " + perm + ", Time (ns): " + (stopTime - startTime));
 
 			long slowStartTime = System.nanoTime();
 			boolean loop = true, firstStep = true;
@@ -118,9 +127,11 @@ public class LocalTester {
 			}
 			long slowStopTime = System.nanoTime();
 
-			System.out.println("Real number of expansions: " + (j - 1) + " , Time: " + (slowStopTime - slowStartTime));
+			System.out.println("Real number of expansions: " + (j - 1) + " , Time (ns): " + (slowStopTime - slowStartTime));
 			System.out.println("Speedup: " + ((slowStopTime - slowStartTime) / (stopTime - startTime) + "x"));
-
+			System.out.println("Node overestimation: "+((perm-(j-1))*100)/(j-1) +"%");
+			System.out.println("-----------------");
+//			System.out.println("====END TEST====");
 			
 			
 			
@@ -128,11 +139,11 @@ public class LocalTester {
 //			TEST CLUSTER
 			
 			
-			System.out.println("BEGINNING TEST");			
+//			System.out.println("BEGINNING TEST");			
 			
 			String chainStr = "";
 			for (Chain c : chains) {
-				System.out.println(c.toString());
+			//	System.out.println(c.toString());
 				chainStr += (chainStr== "" ? "" : "/") +c.toString();
 			}
 			//String baseStr = ""+(perm/10*3) + "," + (perm/10)+",";
@@ -146,9 +157,13 @@ public class LocalTester {
 			// graph.printToFile(out);
 			in.close();
 			System.out.println("Time (ns): "+(endTime-startTime));
+			System.out.println("==============\n");
+			}
 			// out.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+			System.err.println("crash");
 		}
+		System.out.println("====END TEST====");
 	}
 }
