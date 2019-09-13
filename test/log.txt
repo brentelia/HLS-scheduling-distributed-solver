@@ -1,0 +1,132 @@
+===BEGIN TEST====
+Testing file: CFG.txt
+Estimated number of expansions with approximated formula: 288, Time (ns): 7878247
+Real number of expansions: 167 , Time (ns): 3774668
+Speedup: 0x
+Node overestimation: 72%
+-----------------
+ID: 5, Graph cost: 4, Graph validity: true
+A:add:0:0/,/C Position:0
+B:add:0:1/,/E,D Position:1
+C:mult:1:0/A/E Position:1
+D:shift:1:1/B/F Position:2
+E:add:2:0/C,B/F Position:2
+F:mult:3:0/D,E/, Position:3
+G:add:0:2/,/H Position:0
+H:add:1:2/G/, Position:2
+I:add:0:1/,/M,O Position:0
+L:add:1:1/,/M Position:0
+M:add:1:1/I,L/N Position:1
+N:add:2:1/M,O/, Position:2
+O:add:1:1/I/N Position:1
+
+Errors: 126
+Time (ns): 33160245
+==============
+
+Testing file: DAG.txt
+Estimated number of expansions with approximated formula: 270, Time (ns): 770091
+Real number of expansions: 270 , Time (ns): 583185
+Speedup: 0x
+Node overestimation: 0%
+-----------------
+ID: 1, Graph cost: 3, Graph validity: true
+A:mult:0:2/,/G Position:1
+B:mult:0:0/,/E Position:0
+C:mult:0:4/,/N Position:0
+D:min:5:5/,/, Position:0
+E:sum:1:0/B/F,L Position:1
+F:sum:2:0/E/G Position:2
+G:sum:3:0/A,F/H,I,L Position:3
+H:mult:4:0/G/M Position:4
+I:sum:4:0/G/M Position:4
+L:min:4:0/E,G/M Position:4
+M:min_assign:5:0/H,I,L/, Position:5
+N:min_assign:1:4/C/, Position:1
+
+Errors: 126
+Time (ns): 15277102
+==============
+
+Testing file: EVIL.txt
+Estimated number of expansions with approximated formula: 24, Time (ns): 1106934
+Real number of expansions: 18 , Time (ns): 171652
+Speedup: 0x
+Node overestimation: 33%
+-----------------
+ID: 1, Graph cost: 3, Graph validity: true
+A:sum:0:0/,/B Position:0
+B:sum:1:0/A/C Position:1
+C:sum:2:0/B/D Position:2
+D:sum:3:0/C/E Position:3
+E:sum:4:0/D/F Position:4
+F:sum:5:0/E,M/G Position:5
+G:sum:6:0/F,Q/, Position:6
+H:sum:1:1/,/I,N Position:0
+I:sum:2:1/H/L Position:1
+L:sum:3:1/I/M Position:2
+M:sum:4:1/L/Q,F Position:3
+N:sum:2:1/H/O Position:1
+O:sum:3:1/N/P Position:2
+P:sum:4:1/O/Q Position:3
+Q:sum:5:1/M,P/G Position:5
+
+Errors: 132
+Time (ns): 2845302
+==============
+
+Testing file: FREE.txt
+Estimated number of expansions with approximated formula: 9765625, Time (ns): 384734
+Real number of expansions: 9765625 , Time (ns): 679101060
+Speedup: 1765x
+Node overestimation: 0%
+-----------------
+ID: 101724, Graph cost: 3, Graph validity: true
+A:sum:0:0/,/B Position:0
+D:sum:3:0/C/E Position:3
+F:sum:0:4/,/, Position:0
+G:sum:0:4/,/, Position:0
+H:sum:0:4/,/, Position:1
+J:sum:0:4/,/, Position:1
+K:sum:0:4/,/, Position:2
+L:sum:0:4/,/, Position:2
+X:sum:4:4/,/, Position:3
+C:sum:2:0/B/D Position:2
+V:sum:0:4/,/, Position:3
+B:sum:1:0/A/C Position:1
+N:sum:0:4/,/, Position:4
+M:sum:0:4/,/, Position:4
+E:sum:4:0/D/, Position:4
+
+Errors: 132
+Time (ns): 7964113411
+==============
+
+Testing file: XTEA.txt
+Estimated number of expansions with approximated formula: 45, Time (ns): 151129
+Real number of expansions: 45 , Time (ns): 34774
+Speedup: 0x
+Node overestimation: 0%
+-----------------
+ID: 20, Graph cost: 2, Graph validity: true
+E:shift:0:0/,/D Position:0
+F:shift:0:0/,/D Position:0
+D:xor:1:0/E,F/B Position:1
+B:add:2:0/D/A Position:2
+C:add:0:2/,/A Position:2
+A:xor:3:0/B,C/G Position:3
+G:add:4:0/A/H Position:4
+H:assign:5:0/G/, Position:5
+I:add:4:4/,/L Position:1
+L:assign:5:4/I/, Position:3
+
+Errors: 132
+Time (ns): 854601
+==============
+
+Testing file: MULTI.txt
+Estimated number of expansions with approximated formula: 194400000, Time (ns): 394429
+Real number of expansions: 54714557 , Time (ns): 7442672270
+Speedup: 18869x
+Node overestimation: 255%
+-----------------
