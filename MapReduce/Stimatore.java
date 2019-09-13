@@ -160,7 +160,7 @@ public final class Stimatore {
 			else {
 			*/
 			chains.get(i).calculateDangerLevel();
-			System.out.println(chains.get(i).getMinimumPosition());
+			//System.out.println(chains.get(i).getMinimumPosition());
 			//}
 		}
 		/*if (DEBUG) for (Chain c : chains) {

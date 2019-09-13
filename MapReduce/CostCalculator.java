@@ -1,5 +1,5 @@
 package MapReduce;
-
+//github
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import structure.Chain;
 import structure.Dag;
 import structure.Node;
 import util.Pair;
-
+import java.util.Set;
 public class CostCalculator {
 	public static int errors = 0;
 	public static String calculate(String graphStr, String key) {
@@ -22,7 +22,7 @@ public class CostCalculator {
 		int startingValue = Integer.parseInt(params[0]);
 		int permToCalc = Integer.parseInt(params[1]);
 		
-		System.out.println("StartingValue: "+startingValue+", PermToCalc: "+permToCalc);
+		//System.out.println("StartingValue: "+startingValue+", PermToCalc: "+permToCalc);
 		ArrayList<Chain> chains = graph.parseChainsFromString(params[2]);
 		
 		
@@ -74,11 +74,11 @@ public class CostCalculator {
 			System.out.println(n.toString()+ " Position:"+n.getPosition());
 		}
 		*/
-		System.out.println("Beginning for");
+		//System.out.println("Beginning for");
 		HashMap <Node, Integer> totalMovements = new HashMap<>();
 		for (int counter = 1; counter<=permToCalc; counter++){
 			//System.out.println("Examining ID "+counter+", PermToCalc = "+permToCalc);
-			if (counter % 100000 == 0)System.out.println("Progress: "+counter);
+		//	if (counter % 100000 == 0)System.out.println("Progress: "+counter);
 			//System.out.println("ID: "+(counter+startingValue));
 			//Incremento la cifra meno significativa e propago il riporto
 			boolean carry = true;
