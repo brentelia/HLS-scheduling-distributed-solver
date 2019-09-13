@@ -37,7 +37,7 @@ public class Dag {
 		this.totalTime=0;
 		this.movableNodes=0;
 		//sthis.fixEdges();
-		System.out.println("New GRAPH:\n"+this.toString());
+		//System.out.println("New GRAPH:\n"+this.toString());
 	}
 	
 	public void addNode(Node node) {
