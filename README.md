@@ -10,7 +10,7 @@ The repository is divided into the following folders:
 * structure: this folder contains the class used to represent data in the program.
 * test : this folder contains the files used to test the application functionalities locally (not on the cluster)
 * util : this folder contains other files that are used to support the application.
-
+* exec.sh an exec_log.sh : two scripts used to run multiple test in sequence using only one script. 
 ##  Usage
 
 The software need to be execute into an hadoop filesystem and it has been tested inside both a java 7 and java 8 environment.
