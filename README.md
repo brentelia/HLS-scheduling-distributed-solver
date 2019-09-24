@@ -10,7 +10,7 @@ The repository is divided into the following folders:
 * structure: this folder contains the class used to represent data in the program.
 * test : this folder contains the files used to test the application functionalities locally (not on the cluster)
 * util : this folder contains other files that are used to support the application.
-* exec.sh an exec_log.sh : two scripts used to run multiple test in sequence using only one script. 
+* exec.sh and exec_log.sh : two scripts used to run multiple test in sequence using only one script. 
 ##  Usage
 
 The software need to be execute into an hadoop filesystem and it has been tested inside both a java 7 and java 8 environment.
@@ -27,6 +27,11 @@ After this you can run the jar file
 hadoop jar <your jar name> MapReduce.ExplorerDriver <input directory path> <output directory path> <parallelism level>
 ```
 Note that the output directory is created when the application is run and shouldn't exist berfore that.
+
+Otherwise you can run one of the two bash scripts in this repository to run all the tests. In order to do that just run one of them (note that to run the exec_log.sh, which redirect all the outputs into a log.txt file, the exec.sh file is required) in the same directory of the tests folder. The script parameters are the same as the hadoop command show before:
+```
+./ exec.sh <jar file> MapReduce.ExplorerDriver <input directory path> <output directory path> <parallelism level>
+```
 
 ## Credits
 * [Apache Hadoop](https://hadoop.apache.org/) - The framework this application is based on.
