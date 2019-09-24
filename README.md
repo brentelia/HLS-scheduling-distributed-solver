@@ -30,7 +30,7 @@ Note that the output directory is created when the application is run and should
 
 Otherwise you can run one of the two bash scripts in this repository to run all the tests. In order to do that just run one of them (note that to run the exec_log.sh, which redirect all the outputs into a log.txt file, the exec.sh file is required) in the same directory of the tests folder. The script parameters are the same as the hadoop command show before:
 ```
-./ exec.sh <jar file> MapReduce.ExplorerDriver <input directory path> <output directory path> <parallelism level>
+./exec.sh <jar file> MapReduce.ExplorerDriver <input directory path> <output directory path> <parallelism level>
 ```
 
 ## Credits
