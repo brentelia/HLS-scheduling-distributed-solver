@@ -56,7 +56,7 @@
 
 \begin{abstract}
 	
-Questo documento contiene una relazione sullo sviluppo di un programma per ottimizzare la sintesi hardware partendo dal \emph{control flow graph} di un software tramite un  approccio di tipo map-reduce e sfruttando al massimo le capacità di calcolo distribuito offerte dal framework Hadoop. In particolare il programma proposto, preso in input un \emph{control flow graph} del software da sintetizzare e il livello di parallelismo voluto, detto $n$, produce in output $n$ grafi temporizzati scelti tra quelli che rendono minima la funzione di costo definita nel programma stesso.
+La sintesi ottima di hardware partendo dal \emph{control flow graph} di un software è un'operazione $NP$-Completa. Tramite un  approccio di tipo map-reduce e sfruttando al massimo le capacità di calcolo distribuito offerte dal framework Hadoop  si è riusciti a sviluppare un programma che, preso in input un \emph{control flow graph} del software da sintetizzare e il livello di parallelismo voluto, detto $n$, produce in output $n$ grafi temporizzati scelti tra quelli che rendono minima la funzione di costo definita nel programma stesso; questi grafi temporizzati vengono poi analizzati per ottenere la soluzione ottima.
 
 \end{abstract}
 
@@ -135,7 +135,7 @@ Definito il problema, si può passare ora a descrivere l'approccio usato per ris
 
 Il primo passo fatto è stato quello di andare ad inquadrare il problema in un contesto di tipo map-reduce andando quindi a mappare le fasi che l'algoritmo prevede su quelle del paradigma usato, riservandosi anche di effettuare più cicli di map-reduce qualora necessario.
 \subsection{Trasposizione in Map-Reduce}
-Trasporre il problema in modo da adattarlo al paradigma map-reduce non è un'operazione complicata. Supponendo di ricevere come input già un DFG, le uniche fasi da implementare sono i tre algoritmi di scheduling, due dei quali tuttavia, ovvero ASAP e ALAP, possono essere applicati in sequenza e non richiedono troppe risorne nè di computazione nè di tempo. La parte più onerosa in termini di costo di computazione riguarda infatti la fase di ricerca dove è necessario andare ad esplorare tutti i possibili grafi validi e calcolare il costo di ognuno, ed è quindi questa fase che si vuole andare ad ammortizzare tramite il calcolo distribuito. 
+Trasporre il problema in modo da adattarlo al paradigma map-reduce  è un'operazione complessa. Supponendo di ricevere come input già un DFG, le uniche fasi da implementare sono i tre algoritmi di scheduling, due dei quali tuttavia, ovvero ASAP e ALAP, possono essere applicati in sequenza e non richiedono troppe risorne nè di computazione nè di tempo. La parte più onerosa in termini di costo di computazione riguarda infatti la fase di ricerca dove è necessario andare ad esplorare tutti i possibili grafi validi e calcolare il costo di ognuno, ed è quindi questa fase che si vuole andare ad ammortizzare tramite il calcolo distribuito. 
 
 Per ottenere questo risultato si è partiti da una prima idea di soluzione, ovvero di distribuire l'onere del calcolo delle varie permutazioni tra le varie macchine del cluster, e la si è andata a raffinare e modificare lungo tutto il corso del lavoro. Di seguito sono riportate le tre fasi principali cui la soluzione è andata incontro.
 \begin{itemize}
